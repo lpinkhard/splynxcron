@@ -54,8 +54,8 @@ parse_headers(Header, ReturnType) ->
 parse_header(RawHeader, ReturnType) ->
   case re:split(RawHeader, "\s*:\s*", [{return, ReturnType}, {parts, 2}]) of
     [HeaderName, HeaderVal] -> {header,
-      string:trim(HeaderName, leading),
-      string:trim(HeaderVal, trailing)};
+      re:replace(HeaderName, "^ *", "", [global, {return, list}]),
+      re:replace(HeaderVal, " *$", "", [global, {return, list}])};
     [_NotFound] -> error({parse_failed, end_of_header_name_found})
   end.
 
@@ -65,9 +65,9 @@ parse_header(RawHeader, ReturnType) ->
 %% but this function will only return the first header.
 -spec find_header(list({header, string() | binary(), string() | binary()}), string() | binary()) -> {ok, string() | binary()} | {error, not_found}.
 find_header(HeaderList, HeaderName) ->
-  LcHeaderName = string:lowercase(HeaderName),
+  LcHeaderName = string:to_lower(binary_to_list(HeaderName)),
   ContinueSearchFun = fun({header,Key,_Value}) ->
-    LcHeaderName =/= string:lowercase(Key)
+    LcHeaderName =/= string:to_lower(Key)
                       end,
   case lists:dropwhile(ContinueSearchFun, HeaderList) of
     [] -> {error, not_found};

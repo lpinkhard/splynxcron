@@ -636,11 +636,11 @@ set_options([],S) ->
   S.
 
 s2i(String) when is_list(String) ->
-  l2i(strip(String)).
+  l2i(re:replace(String, "[^0-9]", "", [global, {return, list}])).
 
 %% Remove any trailing stuff from the (ascii) integer value
 strip([H|T]) when H>-48,H=<57 -> [H|strip(T)];
 strip(_)                      -> [].
 
-l2i(List) when is_list(List)  -> list_to_integer(string:trim(List)).
+l2i(List) when is_list(List)  -> list_to_integer(List).
 % l2i(Int) when is_integer(Int) -> Int.  string:tokens always returns strings
