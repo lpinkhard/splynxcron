@@ -642,5 +642,5 @@ s2i(String) when is_list(String) ->
 strip([H|T]) when H>-48,H=<57 -> [H|strip(T)];
 strip(_)                      -> [].
 
-l2i(List) when is_list(List)  -> list_to_integer(List).
+l2i(List) when is_list(List)  -> list_to_integer(string:trim(List)).
 % l2i(Int) when is_integer(Int) -> Int.  string:tokens always returns strings
